@@ -1,0 +1,84 @@
+select* from 
+pizza_sales
+
+1.	--Total revenue
+    select sum(total_price) as Total_revenue
+     from pizza_sales
+
+2.	--Average order value
+       select sum(total_price) /count(distinct order_id) AS Avg_order_value
+       from pizza_sales
+
+3. --Total pizza sold
+      select sum(quantity) as Total_pizza_sold
+	  from pizza_sales
+
+4. -- Total orders
+        select count(distinct order_id) as Total_pizza_ordered
+		from pizza_sales
+
+5. ---Average pizzas per oder
+      select cast(cast(sum(quantity) as decimal(10,2))
+	  / cast(count (distinct Order_id) as decimal(10,2)) as decimal(10,2)) as Avg_pizzas_per_order
+	   from pizza_sales
+
+6. --- Daily trend for total order
+      select DATENAME(DW, order_date) as order_date, count(distinct order_id) as Total_orders
+      from pizza_sales
+      GROUP BY DATENAME(DW, order_date)
+
+7. ---Monthly trend for total order
+     select DATENAME(month, order_date) as Month_name, count(distinct order_id) Total_orders
+	 from pizza_sales
+	 group by  DATENAME(month, order_date)
+	 order by Total_orders desc
+
+8. ---Percentage of sales by pizza category
+      select pizza_category, sum(total_price) as total_sales, sum((total_price) * 100 ) / (select sum(total_price)  from pizza_sales where month(order_date) = 1)
+	   as percenta from pizza_sales
+	   Where month(order_date) = 1
+	   group by pizza_category
+	   
+9. ---Percentage of sales by pizza size
+      select pizza_size, cast (sum(total_price) as decimal(10,2)) as total_sales, cast (sum((total_price) * 100 ) /
+	  (select sum(total_price) from pizza_sales where DATEPART(quarter, order_date) = 1) as decimal(10,2))
+	   as percenta from pizza_sales
+	   where DATEPART(quarter, order_date) = 1
+	   group by pizza_size
+	   order by percenta desc
+	   
+10. ---Top 5 best pizza sales by revenue.total quantity, total order
+       select Top 5 pizza_name, sum(total_price) as revenue
+	   from pizza_sales
+	   group by pizza_name
+	   order by revenue desc
+
+11. ---Bottom 5 pizza sales by revenue total order
+       select Top 5 pizza_name, sum(total_price) as revenue
+	   from pizza_sales
+	   group by pizza_name
+	   order by revenue asc
+
+12. ---Top 5 best pizza sales by total quantity, total order
+       select Top 5 pizza_name, sum(quantity) as Total_quantity
+	   from pizza_sales
+	   group by pizza_name
+	   order by Total_quantity Desc
+
+13. ---Botton 5 pizza sales by total quantity, total order
+       select Top 5 pizza_name, sum(quantity) as Total_quantity
+	   from pizza_sales
+	   group by pizza_name
+	   order by Total_quantity Asc
+
+14. ---Top 5 pizza sales by total order
+       select Top 5 pizza_name, count(distinct order_id) as Total_order
+	   from pizza_sales
+	   group by pizza_name
+	   order by Total_order Desc
+
+15. ---Bottom 5 pizza sales by total order
+       select Top 5 pizza_name, count(distinct order_id) as Total_order
+	   from pizza_sales
+	   group by pizza_name
+	   order by Total_order Asc
